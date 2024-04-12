@@ -4,7 +4,7 @@ from config import KEYS1, KEYS2, OUT_TIME, KEY_ERROR
 
 class EncryptionDecryption(object):
     @staticmethod
-    def binary_to_quaternary(binary: str):
+    def _binary_to_quaternary_(binary: str):
         """
         将二进制转换为四进制
         :param binary: 二进制串
@@ -23,7 +23,7 @@ class EncryptionDecryption(object):
         return quaternary
 
     @staticmethod
-    def quaternary_to_binary(quaternary: str):
+    def _quaternary_to_binary_(quaternary: str):
         """
         将四进制转换为二进制
         :param quaternary: 四进制串
@@ -35,7 +35,7 @@ class EncryptionDecryption(object):
         return binary
 
     @staticmethod
-    def string_to_binary(string):
+    def _string_to_binary_(string):
         """
         将字符串转换为二进制
         :param string: 字符串
@@ -46,7 +46,7 @@ class EncryptionDecryption(object):
         return binary_data
 
     @staticmethod
-    def binary_to_string(binary: str):
+    def _binary_to_string_(binary: str):
         """
         将二进制转换为字符串
         :param binary: 二进制串
@@ -57,7 +57,7 @@ class EncryptionDecryption(object):
         return string
 
     @staticmethod
-    def compression_and_decompression(mode: bool, data: str):
+    def _compression_and_decompression_(mode: bool, data: str):
         """
         将加密内容压缩或解压
         :param mode: True为加密，False为解密，bool类型
@@ -73,7 +73,7 @@ class EncryptionDecryption(object):
         return data
 
     @staticmethod
-    def compression_and_decompression2(mode: bool, data: str):
+    def _compression_and_decompression2_(mode: bool, data: str):
         """
         将加密内容二次压缩或解压
         :param mode: True为加密，False为解密，bool类型
@@ -89,7 +89,7 @@ class EncryptionDecryption(object):
         return data
 
     @staticmethod
-    def split_pairwise(string: str):
+    def _split_pairwise_(string: str):
         """
         将字符串两两分为一组并存入数组
         :param string: 被分割的字符串
@@ -112,7 +112,7 @@ class EncryptionDecryption(object):
         """
         compression = None
         if mode == 0:
-            binary_list = self.split_pairwise(str(self.string_to_binary(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))))
+            binary_list = self._split_pairwise_(str(self._string_to_binary_(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))))
             binary = ""
             for i in binary_list:
                 if i == "00":
@@ -124,16 +124,16 @@ class EncryptionDecryption(object):
                 elif i == "10":
                     binary += "G"
             if is_compression == 1:
-                compression = self.compression_and_decompression(True, binary) + "一三"
+                compression = self._compression_and_decompression_(True, binary) + "一三"
             if is_compression == 2:
-                compression = self.compression_and_decompression2(True, self.compression_and_decompression(True, binary.replace("一", ''))) + "二三"
+                compression = self._compression_and_decompression2_(True, self._compression_and_decompression_(True, binary.replace("一", ''))) + "二三"
         elif mode == 1:
-            binary = self.string_to_binary(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))
-            quaternary = str(self.binary_to_quaternary(binary)).replace("0", "A").replace("1", "T").replace("2", "C").replace("3", "G")
+            binary = self._string_to_binary_(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))
+            quaternary = str(self._binary_to_quaternary_(binary)).replace("0", "A").replace("1", "T").replace("2", "C").replace("3", "G")
             if is_compression == 1:
-                compression = self.compression_and_decompression(True, quaternary) + "一四"
+                compression = self._compression_and_decompression_(True, quaternary) + "一四"
             if is_compression == 2:
-                compression = self.compression_and_decompression2(True, self.compression_and_decompression(True, quaternary.replace("一", ''))) + "二四"
+                compression = self._compression_and_decompression2_(True, self._compression_and_decompression_(True, quaternary.replace("一", ''))) + "二四"
         return compression
 
     def decryption(self, decompression: str, key: str):
@@ -146,17 +146,17 @@ class EncryptionDecryption(object):
         string = None
         if "三" in decompression:
             if "一" in decompression:
-                decompression = self.compression_and_decompression(False, decompression.replace("一", '').replace("三", ""))
+                decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("三", ""))
             if "二" in decompression:
-                decompression = self.compression_and_decompression(False, self.compression_and_decompression2(False, decompression.replace("二", "").replace("三", "")))
-            string = self.binary_to_string(decompression.replace("A", "00").replace("T", "01").replace("C", "11").replace("G", "10")).split(";")
+                decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("三", "")))
+            string = self._binary_to_string_(decompression.replace("A", "00").replace("T", "01").replace("C", "11").replace("G", "10")).split(";")
         elif "四" in decompression:
             if "一" in decompression:
-                decompression = self.compression_and_decompression(False, decompression.replace("一", '').replace("四", ""))
+                decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("四", ""))
             if "二" in decompression:
-                decompression = self.compression_and_decompression(False, self.compression_and_decompression2(False, decompression.replace("二", "").replace("四", "")))
-            binary = self.quaternary_to_binary(decompression.replace("A", "0").replace("T", "1").replace("C", "2").replace("G", "3"))
-            string = self.binary_to_string(binary).split(';')
+                decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("四", "")))
+            binary = self._quaternary_to_binary_(decompression.replace("A", "0").replace("T", "1").replace("C", "2").replace("G", "3"))
+            string = self._binary_to_string_(binary).split(';')
         if string[1] != "-1":
             effective_duration = int(time.time() - float(string[3]))
             if string[2] == key:
