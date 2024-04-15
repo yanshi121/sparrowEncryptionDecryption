@@ -1,8 +1,8 @@
 import time
-from config import KEYS1, KEYS2, OUT_TIME, KEY_ERROR
+from sparrowEncryptionDecryption.config import KEYS1, KEYS2, OUT_TIME, KEY_ERROR
 
 
-class EncryptionDecryption(object):
+class SparrowEncryptionDecryption(object):
     @staticmethod
     def _binary_to_quaternary_(binary: str):
         """
@@ -169,18 +169,3 @@ class EncryptionDecryption(object):
         else:
             return string[0]
 
-
-if __name__ == '__main__':
-    run = EncryptionDecryption()
-    encryption = run.encryption("超奇迹 分类记 15000日语单词 日语入门词汇学习，一站式搞定", "39", 7, 2, 1)
-    print(encryption)
-    print(len(encryption))
-    decryption = run.decryption(encryption, "39")
-    print(decryption)
-    print(len(decryption))
-    encryption_ = run.encryption("超奇迹 分类记 15000日语单词 日语入门词汇学习，一站式搞定", "39", 7, 2, 0)
-    print(encryption_)
-    print(len(encryption_))
-    decryption_ = run.decryption(encryption_, "39")
-    print(decryption_)
-    print(len(decryption_))
