@@ -3,6 +3,17 @@ from sparrowEncryptionDecryption.config import KEYS1, KEYS2, OUT_TIME, KEY_ERROR
 
 
 class SparrowEncryptionDecryption(object):
+    def __init__(self, keys1: dict = None, keys2: dict = None):
+        if keys1 is None:
+            self.keys1 = KEYS1
+        else:
+            self.keys1 = keys1
+        if keys2 is None:
+            self.keys2 = KEYS2
+        else:
+            self.keys2 = keys2
+        
+
     @staticmethod
     def _binary_to_quaternary_(binary: str):
         """
@@ -56,8 +67,7 @@ class SparrowEncryptionDecryption(object):
         string = bytes(bytes_data).decode('utf-8')
         return string
 
-    @staticmethod
-    def _compression_and_decompression_(mode: bool, data: str):
+    def _compression_and_decompression_(self, mode: bool, data: str):
         """
         将加密内容压缩或解压
         :param mode: True为加密，False为解密，bool类型
@@ -65,15 +75,14 @@ class SparrowEncryptionDecryption(object):
         :return: 返回被压缩或解压的数据
         """
         if mode:
-            for k, v in KEYS1.items():
+            for k, v in self.keys1.items():
                 data = data.replace(k, v)
         else:
-            for k, v in KEYS1.items():
+            for k, v in self.keys1.items():
                 data = data.replace(v, k)
         return data
 
-    @staticmethod
-    def _compression_and_decompression2_(mode: bool, data: str):
+    def _compression_and_decompression2_(self, mode: bool, data: str):
         """
         将加密内容二次压缩或解压
         :param mode: True为加密，False为解密，bool类型
@@ -81,10 +90,10 @@ class SparrowEncryptionDecryption(object):
         :return: 返回被压缩或解压的数据
         """
         if mode:
-            for k, v in KEYS2.items():
+            for k, v in self.keys2.items():
                 data = data.replace(k, v)
         else:
-            for k, v in KEYS2.items():
+            for k, v in self.keys2.items():
                 data = data.replace(v, k)
         return data
 
