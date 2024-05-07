@@ -63,7 +63,19 @@ def split_pairwise(string: str):
     return result
 
 
-def compression_and_decompression2(mode: bool, data: str, keys2: dict):
+def split_double_pairwise(string: str):
+    """
+    将字符串每四个分为一组并存入数组
+    :param string:
+    :return:
+    """
+    result = []
+    for i in range(0, len(string), 4):
+        result.append(string[i:i + 4])
+    return result
+
+
+def order_compression_and_decompression2(mode: bool, data: str, keys2: dict):
     """
     将加密内容二次压缩或解压
     :param keys2: 密钥对
@@ -80,7 +92,7 @@ def compression_and_decompression2(mode: bool, data: str, keys2: dict):
     return data
 
 
-def compression_and_decompression(mode: bool, data: str, keys1: dict):
+def order_compression_and_decompression(mode: bool, data: str, keys1: dict):
     """
     将加密内容压缩或解压
     :param keys1: 密钥对
