@@ -188,10 +188,3 @@ class SparrowEncryptionDecryption(object):
         else:
             return string[0]
 
-
-if __name__ == "__main__":
-    a = SparrowEncryptionDecryption()
-    data = a.encryption("test", "39", -1, 2, 0)
-    print(data)
-    d = a.decryption(data, "39")
-    print(d)
