@@ -132,6 +132,8 @@ class SparrowEncryptionDecryption(object):
                     binary += "C"
                 elif i == "10":
                     binary += "G"
+            if is_compression == 0:
+                return binary + "零三"
             if is_compression == 1:
                 compression = self._compression_and_decompression_(True, binary) + "一三"
             if is_compression == 2:
@@ -139,6 +141,8 @@ class SparrowEncryptionDecryption(object):
         elif mode == 1:
             binary = self._string_to_binary_(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))
             quaternary = str(self._binary_to_quaternary_(binary)).replace("0", "A").replace("1", "T").replace("2", "C").replace("3", "G")
+            if is_compression == 0:
+                return quaternary + "零四"
             if is_compression == 1:
                 compression = self._compression_and_decompression_(True, quaternary) + "一四"
             if is_compression == 2:
@@ -154,16 +158,22 @@ class SparrowEncryptionDecryption(object):
         """
         string = None
         if "三" in decompression:
-            if "一" in decompression:
-                decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("三", ""))
-            if "二" in decompression:
-                decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("三", "")))
+            if "零" in decompression:
+                decompression = decompression.replace("零", '').replace("三", "")
+            else:
+                if "一" in decompression:
+                    decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("三", ""))
+                if "二" in decompression:
+                    decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("三", "")))
             string = self._binary_to_string_(decompression.replace("A", "00").replace("T", "01").replace("C", "11").replace("G", "10")).split(";")
         elif "四" in decompression:
-            if "一" in decompression:
-                decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("四", ""))
-            if "二" in decompression:
-                decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("四", "")))
+            if "零" in decompression:
+                decompression = decompression.replace("零", '').replace("四", "")
+            else:
+                if "一" in decompression:
+                    decompression = self._compression_and_decompression_(False, decompression.replace("一", '').replace("四", ""))
+                if "二" in decompression:
+                    decompression = self._compression_and_decompression_(False, self._compression_and_decompression2_(False, decompression.replace("二", "").replace("四", "")))
             binary = self._quaternary_to_binary_(decompression.replace("A", "0").replace("T", "1").replace("C", "2").replace("G", "3"))
             string = self._binary_to_string_(binary).split(';')
         if string[1] != "-1":
@@ -178,3 +188,10 @@ class SparrowEncryptionDecryption(object):
         else:
             return string[0]
 
+
+if __name__ == "__main__":
+    a = SparrowEncryptionDecryption()
+    data = a.encryption("test", "39", -1, 2, 0)
+    print(data)
+    d = a.decryption(data, "39")
+    print(d)
