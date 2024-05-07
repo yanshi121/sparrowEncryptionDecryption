@@ -5,10 +5,15 @@ from sparrowEncryptionDecryption.tools import binary_to_quaternary
 from sparrowEncryptionDecryption.tools import split_pairwise
 from sparrowEncryptionDecryption.tools import compression_and_decompression2
 from sparrowEncryptionDecryption.tools import compression_and_decompression
+from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
+from sparrowEncryptionDecryption.tools import SparrowStringTypeError
+from sparrowEncryptionDecryption.tools import SparrowModeRangeError
+from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
 
 
 class SparrowEncryption:
-    def __init__(self, keys1: dict = None, keys2: dict = None):
+    def __init__(self, keys1: dict = None, keys2: dict = None, try_mode: bool = False):
+        self.try_mode = try_mode
         if keys1 is None:
             self.keys1 = KEYS1
         else:
@@ -28,6 +33,18 @@ class SparrowEncryption:
         :param mode: 加密模式，0为二进制加密，1为四进制加密
         :return: 返回被加密好的数据
         """
+        if type(key) is not str:
+            if self.try_mode:
+                raise SparrowKeyTypeError
+        if type(string) is not str:
+            if self.try_mode:
+                raise SparrowStringTypeError
+        if str(is_compression) not in ['0', '1', '2']:
+            if self.try_mode:
+                raise SparrowCompressionRangeError
+        if str(mode) not in ['0', '1']:
+            if self.try_mode:
+                raise SparrowModeRangeError
         compression = None
         if mode == 0:
             binary_list = split_pairwise(str(string_to_binary(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))))
