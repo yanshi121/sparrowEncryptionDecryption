@@ -16,9 +16,18 @@ from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
 
 
 class SparrowEncryption:
-    def __init__(self):
-        self._keys1_ = ORDER_KEYS1
-        self._keys2_ = ORDER_KEYS2
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        """
+        初始化加密类
+        :param order_keys1: order方法第一次加密秘钥
+        :param order_keys2: order方法第二次加密秘钥
+        :param easy_keys1: easy方法第一次加密秘钥
+        :param easy_keys2: easy方法第二次加密秘钥
+        """
+        self._keys1_ = order_keys1
+        self._keys2_ = order_keys2
+        self._easy_keys1_ = easy_keys1
+        self._easy_keys2_ = easy_keys2
 
     def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
                          mode: int = 0):
@@ -75,8 +84,7 @@ class SparrowEncryption:
                         True, quaternary.replace("一", ''), self._keys1_), self._keys2_) + "二四"
         return compression
 
-    @staticmethod
-    def easy_encryption(string: str, key: str, mode: int = 0):
+    def easy_encryption(self, string: str, key: str, mode: int = 0):
         """
         加密数据
         :param string: 需要被加密的数据
@@ -95,17 +103,17 @@ class SparrowEncryption:
         if str(mode) == "0":
             split_data = split_double_pairwise(str(string_to_binary(string)))
             for i in split_data:
-                encryption_data += EASY_KEYS1[i]
+                encryption_data += self._easy_keys1_[i]
             split_key_data = split_double_pairwise(str(string_to_binary(key)))
             for i in split_key_data:
-                encryption_key_data += EASY_KEYS1[i]
+                encryption_key_data += self._easy_keys1_[i]
         elif str(mode) == "1":
             split_data = split_double_pairwise(str(binary_to_quaternary(str(string_to_binary(string)))))
             for i in split_data:
-                encryption_data += EASY_KEYS2[i]
+                encryption_data += self._easy_keys2_[i]
             split_key_data = split_double_pairwise(str(binary_to_quaternary(str(string_to_binary(key)))))
             for i in split_key_data:
-                encryption_key_data += EASY_KEYS2[i]
+                encryption_key_data += self._easy_keys2_[i]
         key_a = encryption_key_data[0: int(len(encryption_key_data) / 2)]
         key_b = encryption_key_data[int(len(encryption_key_data) / 2)::]
         data_a = encryption_data[0: int(len(encryption_data) / 2)]
@@ -117,31 +125,23 @@ class SparrowEncryption:
 
 
 class SparrowEncryptionAsync(SparrowEncryption):
-    def __init__(self):
-        super().__init__()  # 正确调用父类构造函数
-
-    @staticmethod
-    async def easy_encryption(string: str, key: str, mode: int = 0):
-        # 如果此方法不涉及I/O或其他耗时操作，则无需定义为异步
-        return SparrowEncryption.easy_encryption(string, key, mode)
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        super().__init__(order_keys1, order_keys2, easy_keys1, easy_keys2)
 
     async def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
                                mode: int = 0):
-        # 如果此方法不涉及I/O或其他耗时操作，则无需定义为异步
-        return await self._sync_to_async(SparrowEncryption.order_encryption)(
-            self=self, string=string, key=key, effective_duration=effective_duration,
-            is_compression=is_compression, mode=mode
-        )
-
-    @staticmethod
-    def _sync_to_async(func):
-        import asyncio
-        from functools import partial
+        """
+        异步加密数据。
+        """
         loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().order_encryption, string=string, key=key, effective_duration=effective_duration,
+            is_compression=is_compression, mode=mode))
 
-        def wrapper(*args, **kwargs):
-            # 将同步函数封装成异步函数
-            future = loop.run_in_executor(None, partial(func, *args, **kwargs))
-            return future
-
-        return wrapper
+    async def easy_encryption(self, string: str, key: str, mode: int = 0):
+        """
+        异步简单加密数据。
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().easy_encryption, string=string, key=key, mode=mode))

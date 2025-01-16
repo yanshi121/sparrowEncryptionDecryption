@@ -1,2 +1,2 @@
-from sparrowEncryptionDecryption.function.decryption import SparrowDecryption
-from sparrowEncryptionDecryption.function.encryption import SparrowEncryption
+from sparrowEncryptionDecryption.function.decryption import SparrowDecryption, SparrowDecryptionAsync
+from sparrowEncryptionDecryption.function.encryption import SparrowEncryption, SparrowEncryptionAsync

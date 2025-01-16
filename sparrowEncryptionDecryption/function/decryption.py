@@ -16,10 +16,19 @@ from sparrowEncryptionDecryption.tools import SparrowDecompressionTypeError
 from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
 
 
-class SparrowDecryption(object):
-    def __init__(self):
-        self._keys1_ = ORDER_KEYS1
-        self._keys2_ = ORDER_KEYS2
+class SparrowDecryption:
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        """
+        初始化解密类
+        :param order_keys1: order方法第一次解密秘钥
+        :param order_keys2: order方法第二次解密秘钥
+        :param easy_keys1: easy方法第一次解密秘钥
+        :param easy_keys2: easy方法第二次解密秘钥
+        """
+        self._keys1_ = order_keys1
+        self._keys2_ = order_keys2
+        self._easy_keys1_ = easy_keys1
+        self._easy_keys2_ = easy_keys2
 
     def order_decryption(self, decompression: str, key: str):
         """
@@ -92,8 +101,7 @@ class SparrowDecryption(object):
             else:
                 raise SparrowSecretKeyError
 
-    @staticmethod
-    def easy_decryption(decompression: str, key: str):
+    def easy_decryption(self, decompression: str, key: str):
         """
         将被加密的数据解密
         :param decompression: 需要被解密的数据
@@ -111,7 +119,7 @@ class SparrowDecryption(object):
         decryption_keys = {}
         if decryption_key_part == decryption_key_group:
             if encryption_mode == "四":
-                for k, v in EASY_KEYS2.items():
+                for k, v in self._easy_keys2_.items():
                     decryption_keys[v] = k
                 decryption_key = ""
                 for i in decryption_key_group:
@@ -129,7 +137,7 @@ class SparrowDecryption(object):
                 else:
                     raise SparrowSecretKeyError
             elif encryption_mode == "二":
-                for k, v in EASY_KEYS1.items():
+                for k, v in self._easy_keys1_.items():
                     decryption_keys[v] = k
                 decryption_key = ""
                 for i in decryption_key_group:
@@ -151,15 +159,21 @@ class SparrowDecryption(object):
 
 
 class SparrowDecryptionAsync(SparrowDecryption):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        super().__init__(order_keys1, order_keys2, easy_keys1, easy_keys2)
 
     async def order_decryption(self, decompression: str, key: str):
+        """
+        异步解密数据。
+        """
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, partial(
-            SparrowDecryption.order_decryption, self, decompression, key))
+            super().order_decryption, decompression=decompression, key=key))
 
-    @staticmethod
-    async def easy_decryption(decompression: str, key: str):
+    async def easy_decryption(self, decompression: str, key: str):
+        """
+        异步简单解密数据。
+        """
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, SparrowDecryption.easy_decryption, decompression, key)
+        return await loop.run_in_executor(None, partial(
+            super().easy_decryption, decompression=decompression, key=key))

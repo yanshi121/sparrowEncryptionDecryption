@@ -1,5 +1,3 @@
-from setuptools import setup, find_packages
-
 import setuptools
 
 with open("sparrowEncryptionDecryption.md", "r", encoding="utf-8") as fh:

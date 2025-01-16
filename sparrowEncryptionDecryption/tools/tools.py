@@ -66,8 +66,8 @@ def split_pairwise(string: str):
 def split_double_pairwise(string: str):
     """
     将字符串每四个分为一组并存入数组
-    :param string:
-    :return:
+    :param string: 被分割的字符串
+    :return: 返回分割好的数组
     """
     result = []
     for i in range(0, len(string), 4):

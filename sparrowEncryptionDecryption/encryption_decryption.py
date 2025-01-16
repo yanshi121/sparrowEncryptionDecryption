@@ -1,18 +1,19 @@
+import asyncio
+from functools import partial
 from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
 from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
-from sparrowEncryptionDecryption.function import SparrowDecryption
-from sparrowEncryptionDecryption.function import SparrowEncryption
+from sparrowEncryptionDecryption.function import SparrowDecryption, SparrowDecryptionAsync
+from sparrowEncryptionDecryption.function import SparrowEncryption, SparrowEncryptionAsync
 from sparrowEncryptionDecryption.tools import SparrowInputDataNoneError
 
 
-class SparrowEncryptionDecryption(object):
-    def __init__(self):
-        self._keys1_ = ORDER_KEYS1
-        self._keys2_ = ORDER_KEYS2
-        self._encryption_ = SparrowEncryption()
-        self._decryption_ = SparrowDecryption()
+class SparrowEncryptionDecryption:
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        self._encryption_ = SparrowEncryption(order_keys1, order_keys2, easy_keys1, easy_keys2)
+        self._decryption_ = SparrowDecryption(order_keys1, order_keys2, easy_keys1, easy_keys2)
 
-    def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2, mode: int = 0):
+    def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
+                         mode: int = 0):
         """
         加密数据
         :param string: 需要被加密的数据
@@ -69,3 +70,42 @@ class SparrowEncryptionDecryption(object):
         return self._decryption_.easy_decryption(decompression, key)
 
 
+class SparrowEncryptionDecryptionAsync(SparrowEncryptionDecryption):
+    def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
+        super().__init__(order_keys1, order_keys2, easy_keys1, easy_keys2)
+        self._encryption_ = SparrowEncryptionAsync(order_keys1, order_keys2, easy_keys1, easy_keys2)
+        self._decryption_ = SparrowDecryptionAsync(order_keys1, order_keys2, easy_keys1, easy_keys2)
+
+    async def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
+                               mode: int = 0):
+        """
+        异步加密数据。
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().order_encryption, string=string, key=key, effective_duration=effective_duration,
+            is_compression=is_compression, mode=mode))
+
+    async def easy_encryption(self, string: str, key: str, mode: int = 0):
+        """
+        异步简单加密数据。
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().easy_encryption, string=string, key=key, mode=mode))
+
+    async def order_decryption(self, decompression: str, key: str):
+        """
+        异步解密数据。
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().order_decryption, decompression=decompression, key=key))
+
+    async def easy_decryption(self, decompression: str, key: str):
+        """
+        异步简单解密数据。
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().easy_decryption, decompression=decompression, key=key))
