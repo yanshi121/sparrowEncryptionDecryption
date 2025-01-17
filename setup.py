@@ -4,7 +4,7 @@ with open("sparrowEncryptionDecryption.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 setuptools.setup(
     name="sparrowEncryptionDecryption",  # 包名
-    version="0.1.3",  # 包版本号
+    version="0.1.4",  # 包版本号
     author="39",  # 作者名
     author_email="DY39project@outlook.com",  # 联系方式
     description="基于进制转换的浅加密工具",  # 包的简述
