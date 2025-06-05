@@ -1,4 +1,7 @@
+import asyncio
 import time
+from functools import partial
+
 from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
 from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
 from sparrowEncryptionDecryption.function.config import EASY_KEYS1
@@ -13,6 +16,7 @@ from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
 from sparrowEncryptionDecryption.tools import SparrowStringTypeError
 from sparrowEncryptionDecryption.tools import SparrowModeRangeError
 from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
+from sparrowEncryptionDecryption.tools import COMPRESSION_ALGORITHMS
 
 
 class SparrowEncryption:
@@ -30,7 +34,7 @@ class SparrowEncryption:
         self._easy_keys2_ = easy_keys2
 
     def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
-                         mode: int = 0):
+                         mode: int = 0, compression_type: str = None):
         """
         加密数据
         :param string: 需要被加密的数据
@@ -38,6 +42,7 @@ class SparrowEncryption:
         :param effective_duration: 秘钥过期时间，-1为永不过期
         :param is_compression: 默认为2，二次压缩压缩，1为一次压缩，0为不压缩
         :param mode: 加密模式，0为二进制加密，1为四进制加密
+        :param compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
         :return: 返回被加密好的数据
         """
         if type(key) is not str:
@@ -82,15 +87,20 @@ class SparrowEncryption:
                 compression = order_compression_and_decompression2(
                     True, order_compression_and_decompression(
                         True, quaternary.replace("一", ''), self._keys1_), self._keys2_) + "二四"
-        return compression
+        if compression_type is None:
+            return compression
+        else:
+            return COMPRESSION_ALGORITHMS[compression_type]['compress'](compression)
 
-    def easy_encryption(self, string: str, key: str, mode: int = 0):
+    def easy_encryption(self, string: str, key: str, mode: int = 0, compression_type: str = None):
         """
         加密数据
+        :param compression_type:
         :param string: 需要被加密的数据
         :param key: 秘钥
         :param mode: 加密模式，0为二进制加密，1为四进制加密
         :return: 返回被加密好的数据
+        :param compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
         """
         if type(key) is not str:
             raise SparrowKeyTypeError
@@ -119,9 +129,16 @@ class SparrowEncryption:
         data_a = encryption_data[0: int(len(encryption_data) / 2)]
         data_b = encryption_data[int(len(encryption_data) / 2)::]
         if str(mode) == "0":
-            return key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "二"
+            compression = key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "二"
         elif str(mode) == "1":
-            return key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "四"
+            compression = key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "四"
+        else:
+            raise SparrowModeRangeError
+        if compression_type is None:
+            return compression
+        else:
+            return COMPRESSION_ALGORITHMS[compression_type]['compress'](compression)
+
 
 
 class SparrowEncryptionAsync(SparrowEncryption):
@@ -129,7 +146,7 @@ class SparrowEncryptionAsync(SparrowEncryption):
         super().__init__(order_keys1, order_keys2, easy_keys1, easy_keys2)
 
     async def order_encryption(self, string: str, key: str, effective_duration: int = -1, is_compression: int = 2,
-                               mode: int = 0):
+                               mode: int = 0, compression_type: str = None):
         """
         异步加密数据。
         """
@@ -138,7 +155,7 @@ class SparrowEncryptionAsync(SparrowEncryption):
             super().order_encryption, string=string, key=key, effective_duration=effective_duration,
             is_compression=is_compression, mode=mode))
 
-    async def easy_encryption(self, string: str, key: str, mode: int = 0):
+    async def easy_encryption(self, string: str, key: str, mode: int = 0, compression_type: str = None):
         """
         异步简单加密数据。
         """

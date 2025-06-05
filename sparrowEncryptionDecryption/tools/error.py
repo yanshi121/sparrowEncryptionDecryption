@@ -77,3 +77,12 @@ class SparrowInputDataNoneError(Exception):
         else:
             self.error_message = "输入的值不能为空"
         super().__init__(self.error_message)
+
+
+class SparrowCompressTypeError(Exception):
+    def __init__(self, error_message: str = None):
+        if error_message is not None:
+            self.error_message = error_message
+        else:
+            self.error_message = "压缩算法错误"
+        super().__init__(self.error_message)

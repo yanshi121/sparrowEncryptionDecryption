@@ -5,7 +5,7 @@ from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
 from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
 from sparrowEncryptionDecryption.function.config import EASY_KEYS1
 from sparrowEncryptionDecryption.function.config import EASY_KEYS2
-from sparrowEncryptionDecryption.tools import binary_to_string
+from sparrowEncryptionDecryption.tools import binary_to_string, SparrowCompressTypeError
 from sparrowEncryptionDecryption.tools import quaternary_to_binary
 from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
 from sparrowEncryptionDecryption.tools import order_compression_and_decompression
@@ -14,6 +14,7 @@ from sparrowEncryptionDecryption.tools import SparrowSecretKeyOverdueError
 from sparrowEncryptionDecryption.tools import SparrowSecretKeyError
 from sparrowEncryptionDecryption.tools import SparrowDecompressionTypeError
 from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
+from sparrowEncryptionDecryption.tools import COMPRESSION_ALGORITHMS
 
 
 class SparrowDecryption:
@@ -30,15 +31,22 @@ class SparrowDecryption:
         self._easy_keys1_ = easy_keys1
         self._easy_keys2_ = easy_keys2
 
-    def order_decryption(self, decompression: str, key: str):
+    def order_decryption(self, decompression: str, key: str, compression_type: str = None):
         """
         将被加密的数据解密
         :param decompression: 需要被解密的数据
         :param key: 秘钥
+        :param compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
         :return: 返回被解密的数据或秘钥错误类型
         """
-        if type(decompression) is not str:
-            raise SparrowDecompressionTypeError
+        if compression_type is None:
+            if type(decompression) is not str:
+                raise SparrowDecompressionTypeError
+        else:
+            try:
+                decompression = COMPRESSION_ALGORITHMS[compression_type]['decompress'](decompression)
+            except Exception:
+                raise SparrowCompressTypeError
         if type(key) is not str:
             raise SparrowKeyTypeError
         if "三" in decompression:
@@ -101,15 +109,22 @@ class SparrowDecryption:
             else:
                 raise SparrowSecretKeyError
 
-    def easy_decryption(self, decompression: str, key: str):
+    def easy_decryption(self, decompression: str, key: str, compression_type: str = None):
         """
         将被加密的数据解密
         :param decompression: 需要被解密的数据
         :param key: 秘钥
         :return: 返回被解密的数据或秘钥错误类型
+        :param compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
         """
-        if type(decompression) is not str:
-            raise SparrowDecompressionTypeError
+        if compression_type is None:
+            if type(decompression) is not str:
+                raise SparrowDecompressionTypeError
+        else:
+            try:
+                decompression = COMPRESSION_ALGORITHMS[compression_type]['decompress'](decompression)
+            except Exception:
+                raise SparrowCompressTypeError
         if type(key) is not str:
             raise SparrowKeyTypeError
         decryption_list = decompression.split("/")

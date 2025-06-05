@@ -1,8 +1,8 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: sparrowEncryptionDecryption
-Version: 0.1.4
+Version: 0.1.5
 Summary: 基于进制转换的浅加密工具
-Home-page: https://github.com/yanshi121/sparrowSql
+Home-page: https://github.com/yanshi121/sparrowEncryptionDecryption
 Author: 39
 Author-email: DY39project@outlook.com
 Classifier: Programming Language :: Python :: 3
@@ -12,12 +12,17 @@ Classifier: Operating System :: POSIX :: Linux
 Requires-Python: >=3.5
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
+Requires-Dist: lz4
+Requires-Dist: brotli
+Requires-Dist: python-snappy
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier
 Dynamic: description
 Dynamic: description-content-type
 Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary
 
@@ -137,6 +142,7 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
     * effective_duration: 秘钥过期时间，-1为永不过期，默认-1
     * is_compression: 默认为2，二次压缩压缩，1为一次压缩，0为不压缩
     * mode: 加密模式，0为二进制加密，1为四进制加密，默认为0
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
 * 返回被加密好的数据
 
 ```python
@@ -155,6 +161,7 @@ sed.order_encryption("test", "test")
     * string: 需要被加密的数据
     * key: 秘钥
     * mode: 加密模式，0为二进制加密，1为四进制加密，默认为0
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
 * 返回被加密好的数据
 
 ```python
@@ -181,6 +188,7 @@ sed.easy_encryption("test", "test")
 * 携带两个参数
     * decompression: 需要被解密的数据
     * key: 秘钥
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
 * 返回被解密的数据或秘钥错误类型
 
 ```python
@@ -198,6 +206,7 @@ sed.order_decryption("test", "test")
 * 携带两个参数
     * decompression: 需要被解密的数据
     * key: 秘钥
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
 * 返回被解密的数据或秘钥错误类型
 
 ```python

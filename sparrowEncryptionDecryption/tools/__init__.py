@@ -16,6 +16,7 @@ from sparrowEncryptionDecryption.tools.error import SparrowStringTypeError
 from sparrowEncryptionDecryption.tools.error import SparrowCompressionRangeError
 from sparrowEncryptionDecryption.tools.error import SparrowModeRangeError
 from sparrowEncryptionDecryption.tools.error import SparrowInputDataNoneError
+from sparrowEncryptionDecryption.tools.error import SparrowCompressTypeError
 
-
+from sparrowEncryptionDecryption.tools.compress import COMPRESSION_ALGORITHMS
 
