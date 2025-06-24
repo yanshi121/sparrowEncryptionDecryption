@@ -1,12 +1,12 @@
 import asyncio
 from functools import partial
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
 from sparrowEncryptionDecryption.function.config import EASY_KEYS1
 from sparrowEncryptionDecryption.function.config import EASY_KEYS2
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
+from sparrowEncryptionDecryption.tools import SparrowInputDataNoneError
 from sparrowEncryptionDecryption.function import SparrowDecryption, SparrowDecryptionAsync
 from sparrowEncryptionDecryption.function import SparrowEncryption, SparrowEncryptionAsync
-from sparrowEncryptionDecryption.tools import SparrowInputDataNoneError
 
 
 class SparrowEncryptionDecryption:

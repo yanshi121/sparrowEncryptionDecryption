@@ -1,12 +1,12 @@
-import zlib
 import bz2
+import zlib
 import lzma
 import gzip
-import lz4.frame
-import brotli
-import snappy
-import struct
 import heapq
+import struct
+import snappy
+import brotli
+import lz4.frame
 
 
 # 优化后的哈夫曼编码实现
