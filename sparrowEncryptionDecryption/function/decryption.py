@@ -1,20 +1,22 @@
+import ast
 import time
 import asyncio
 from functools import partial
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
+from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
+from sparrowEncryptionDecryption.tools import quaternary_to_binary
 from sparrowEncryptionDecryption.function.config import EASY_KEYS1
 from sparrowEncryptionDecryption.function.config import EASY_KEYS2
-from sparrowEncryptionDecryption.tools import binary_to_string, SparrowCompressTypeError
-from sparrowEncryptionDecryption.tools import quaternary_to_binary
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression
-from sparrowEncryptionDecryption.tools import SparrowBeDecryptionContentError
-from sparrowEncryptionDecryption.tools import SparrowSecretKeyOverdueError
+from sparrowEncryptionDecryption.function.config import SPLIT_CHAR
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
 from sparrowEncryptionDecryption.tools import SparrowSecretKeyError
-from sparrowEncryptionDecryption.tools import SparrowDecompressionTypeError
-from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
 from sparrowEncryptionDecryption.tools import COMPRESSION_ALGORITHMS
+from sparrowEncryptionDecryption.tools import SparrowSecretKeyOverdueError
+from sparrowEncryptionDecryption.tools import SparrowDecompressionTypeError
+from sparrowEncryptionDecryption.tools import SparrowBeDecryptionContentError
+from sparrowEncryptionDecryption.tools import order_compression_and_decompression
+from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
+from sparrowEncryptionDecryption.tools import binary_to_string, SparrowCompressTypeError
 
 
 class SparrowDecryption:
@@ -66,7 +68,7 @@ class SparrowDecryption:
                         raise SparrowBeDecryptionContentError
                 string = binary_to_string(
                     decompression.replace("A", "00").replace("T", "01").replace("C", "11")
-                    .replace("G", "10")).split(";")
+                    .replace("G", "10")).split(SPLIT_CHAR)
             except Exception:
                 raise SparrowBeDecryptionContentError
         elif "四" in decompression:
@@ -89,23 +91,27 @@ class SparrowDecryption:
                         raise SparrowBeDecryptionContentError
                 binary = quaternary_to_binary(
                     decompression.replace("A", "0").replace("T", "1").replace("C", "2").replace("G", "3"))
-                string = binary_to_string(binary).split(';')
+                string = binary_to_string(binary).split(SPLIT_CHAR)
             except Exception:
                 raise SparrowBeDecryptionContentError
         else:
             raise SparrowBeDecryptionContentError
+        if compression_type is not None:
+            string_data = ast.literal_eval(string[0])
+        else:
+            string_data = string[0]
         if string[1] != "-1":
             effective_duration = int(time.time() - float(string[3]))
             if string[2] == key:
                 if effective_duration < int(string[1]):
-                    return string[0]
+                    return string_data
                 else:
                     raise SparrowSecretKeyOverdueError
             else:
                 raise SparrowSecretKeyError
         else:
             if string[2] == key:
-                return string[0]
+                return string_data
             else:
                 raise SparrowSecretKeyError
 
@@ -127,7 +133,7 @@ class SparrowDecryption:
                 raise SparrowCompressTypeError
         if type(key) is not str:
             raise SparrowKeyTypeError
-        decryption_list = decompression.split("/")
+        decryption_list = decompression.split(SPLIT_CHAR)
         decryption_key_part = decryption_list[0] + decryption_list[4]
         decryption_key_group = decryption_list[2]
         encryption_mode = decryption_list[5]
@@ -146,7 +152,10 @@ class SparrowDecryption:
                         decryption_data = ""
                         for i in encryption_data:
                             decryption_data += decryption_keys[i]
-                        return binary_to_string(quaternary_to_binary(decryption_data))
+                        if compression_type is not None:
+                            return ast.literal_eval(binary_to_string(quaternary_to_binary(decryption_data)))
+                        else:
+                            return binary_to_string(quaternary_to_binary(decryption_data))
                     except Exception:
                         raise SparrowBeDecryptionContentError
                 else:
@@ -164,7 +173,10 @@ class SparrowDecryption:
                         decryption_data = ""
                         for i in encryption_data:
                             decryption_data += decryption_keys[i]
-                        return binary_to_string(decryption_data)
+                        if compression_type is not None:
+                            return ast.literal_eval(binary_to_string(decryption_data))
+                        else:
+                            return binary_to_string(decryption_data)
                     except Exception:
                         raise SparrowBeDecryptionContentError
                 else:
@@ -177,7 +189,7 @@ class SparrowDecryptionAsync(SparrowDecryption):
     def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
         super().__init__(order_keys1, order_keys2, easy_keys1, easy_keys2)
 
-    async def order_decryption(self, decompression: str, key: str):
+    async def order_decryption(self, decompression: str, key: str, compression_type: str = None):
         """
         异步解密数据。
         """
@@ -185,7 +197,7 @@ class SparrowDecryptionAsync(SparrowDecryption):
         return await loop.run_in_executor(None, partial(
             super().order_decryption, decompression=decompression, key=key))
 
-    async def easy_decryption(self, decompression: str, key: str):
+    async def easy_decryption(self, decompression: str, key: str, compression_type: str = None):
         """
         异步简单解密数据。
         """

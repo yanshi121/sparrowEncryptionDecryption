@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: sparrowEncryptionDecryption
-Version: 0.1.5
-Summary: 基于进制转换的浅加密工具
+Version: 0.2.1
+Summary: 基于进制转换与压缩算法的浅加密工具
 Home-page: https://github.com/yanshi121/sparrowEncryptionDecryption
 Author: 39
 Author-email: DY39project@outlook.com

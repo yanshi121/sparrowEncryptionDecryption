@@ -638,3 +638,4 @@ EASY_KEYS2 = {
     "3333": "ベ"
 }
 
+SPLIT_CHAR = "中"

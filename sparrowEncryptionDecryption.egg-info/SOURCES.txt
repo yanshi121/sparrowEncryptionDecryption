@@ -1,4 +1,5 @@
 LICENSE.txt
+README.md
 setup.py
 sparrowEncryptionDecryption/__init__.py
 sparrowEncryptionDecryption/encryption_decryption.py

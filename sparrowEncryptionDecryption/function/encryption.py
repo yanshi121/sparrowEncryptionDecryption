@@ -1,22 +1,22 @@
-import asyncio
 import time
+import asyncio
 from functools import partial
-
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
-from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
+from sparrowEncryptionDecryption.tools import split_pairwise
+from sparrowEncryptionDecryption.tools import string_to_binary
+from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
 from sparrowEncryptionDecryption.function.config import EASY_KEYS1
 from sparrowEncryptionDecryption.function.config import EASY_KEYS2
-from sparrowEncryptionDecryption.tools import string_to_binary
-from sparrowEncryptionDecryption.tools import split_double_pairwise
 from sparrowEncryptionDecryption.tools import binary_to_quaternary
-from sparrowEncryptionDecryption.tools import split_pairwise
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression
-from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
-from sparrowEncryptionDecryption.tools import SparrowStringTypeError
+from sparrowEncryptionDecryption.function.config import SPLIT_CHAR
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS1
+from sparrowEncryptionDecryption.function.config import ORDER_KEYS2
+from sparrowEncryptionDecryption.tools import split_double_pairwise
 from sparrowEncryptionDecryption.tools import SparrowModeRangeError
-from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
 from sparrowEncryptionDecryption.tools import COMPRESSION_ALGORITHMS
+from sparrowEncryptionDecryption.tools import SparrowStringTypeError
+from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
+from sparrowEncryptionDecryption.tools import order_compression_and_decompression
+from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
 
 
 class SparrowEncryption:
@@ -56,7 +56,7 @@ class SparrowEncryption:
         compression = None
         if mode == 0:
             binary_list = split_pairwise(
-                str(string_to_binary(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))))
+                str(string_to_binary(string + SPLIT_CHAR + str(effective_duration) + SPLIT_CHAR + key + SPLIT_CHAR + str(time.time()))))
             binary = ""
             for i in binary_list:
                 if i == "00":
@@ -76,7 +76,7 @@ class SparrowEncryption:
                     True, order_compression_and_decompression(
                         True, binary.replace("一", ''), self._keys1_), self._keys2_) + "二三"
         elif mode == 1:
-            binary = string_to_binary(string + ";" + str(effective_duration) + ";" + key + ";" + str(time.time()))
+            binary = string_to_binary(string + SPLIT_CHAR + str(effective_duration) + SPLIT_CHAR + key + SPLIT_CHAR + str(time.time()))
             quaternary = (str(binary_to_quaternary(binary)).replace("0", "A")
                           .replace("1", "T").replace("2", "C").replace("3", "G"))
             if is_compression == 0:
@@ -129,9 +129,9 @@ class SparrowEncryption:
         data_a = encryption_data[0: int(len(encryption_data) / 2)]
         data_b = encryption_data[int(len(encryption_data) / 2)::]
         if str(mode) == "0":
-            compression = key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "二"
+            compression = key_a + SPLIT_CHAR + data_a + SPLIT_CHAR + encryption_key_data + SPLIT_CHAR + data_b + SPLIT_CHAR + key_b + SPLIT_CHAR + "二"
         elif str(mode) == "1":
-            compression = key_a + "/" + data_a + "/" + encryption_key_data + "/" + data_b + "/" + key_b + "/" + "四"
+            compression = key_a + SPLIT_CHAR + data_a + SPLIT_CHAR + encryption_key_data + SPLIT_CHAR + data_b + SPLIT_CHAR + key_b + SPLIT_CHAR + "四"
         else:
             raise SparrowModeRangeError
         if compression_type is None:
