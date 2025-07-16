@@ -62,7 +62,7 @@ class SparrowDecryption:
                     elif "二" in decompression:
                         decompression = order_compression_and_decompression(
                             False, order_compression_and_decompression2(
-                                False, decompression.replace("二", "").replace("三", ""), self._keys2_) + "",
+                                False, decompression.replace("二", "").replace("三", ""), self._keys2_),
                             self._keys1_)
                     else:
                         raise SparrowBeDecryptionContentError
@@ -184,6 +184,73 @@ class SparrowDecryption:
         else:
             raise SparrowBeDecryptionContentError("加密内容中秘钥数据已被修改，程序不解密")
 
+    @staticmethod
+    def random_decryption(decompression: str, key: bytes, compression_type: str = None):
+        """
+        将被加密的数据解密
+        :param decompression: 需要被解密的数据
+        :param key: 秘钥
+        :param compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
+        :return: 返回被解密的数据或秘钥错误类型
+        """
+        if compression_type is None:
+            if type(decompression) is not str:
+                raise SparrowDecompressionTypeError
+        else:
+            try:
+                decompression = COMPRESSION_ALGORITHMS[compression_type]['decompress'](decompression)
+            except Exception:
+                raise SparrowCompressTypeError
+        if type(key) is not bytes:
+            raise SparrowKeyTypeError("秘钥类型错误，输入类型为二进制数据")
+        keys = eval(COMPRESSION_ALGORITHMS["zlib"]['decompress'](key))
+        keys1 = keys.get("keys1")
+        keys2 = keys.get("keys2")
+        mode = None
+        if "三" not in decompression and "四" not in decompression:
+            raise SparrowBeDecryptionContentError
+        if "四" in decompression:
+            mode = True
+            decompression = decompression.replace("四", "")
+        if "三" in decompression:
+            mode = False
+            decompression = decompression.replace("三", "")
+        try:
+            if "零" in decompression:
+                decompression = decompression.replace("零", '')
+            elif "一" in decompression:
+                decompression = order_compression_and_decompression(
+                    False, decompression.replace("一", ''), keys1)
+            elif "二" in decompression:
+                decompression = order_compression_and_decompression(
+                    False, order_compression_and_decompression2(
+                        False, decompression.replace("二", ""), keys2),
+                    keys1)
+            else:
+                raise SparrowBeDecryptionContentError
+            if mode:
+                binary = quaternary_to_binary(
+                    decompression.replace("A", "0").replace("T", "1").replace("C", "2").replace("G", "3"))
+                string = binary_to_string(binary).split(SPLIT_CHAR)
+            else:
+                string = binary_to_string(
+                    decompression.replace("A", "00").replace("T", "01").replace("C", "11")
+                    .replace("G", "10")).split(SPLIT_CHAR)
+        except Exception:
+            raise SparrowBeDecryptionContentError
+        if compression_type is not None:
+            string_data = ast.literal_eval(string[0])
+        else:
+            string_data = string[0]
+        if string[1] != "-1":
+            effective_duration = int(time.time() - float(string[2]))
+            if effective_duration < int(string[1]):
+                return string_data
+            else:
+                raise SparrowSecretKeyOverdueError
+        else:
+            return string_data
+
 
 class SparrowDecryptionAsync(SparrowDecryption):
     def __init__(self, order_keys1=ORDER_KEYS1, order_keys2=ORDER_KEYS2, easy_keys1=EASY_KEYS1, easy_keys2=EASY_KEYS2):
@@ -195,7 +262,8 @@ class SparrowDecryptionAsync(SparrowDecryption):
         """
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, partial(
-            super().order_decryption, decompression=decompression, key=key))
+            super().order_decryption, decompression=decompression, key=key
+        ))
 
     async def easy_decryption(self, decompression: str, key: str, compression_type: str = None):
         """
@@ -203,4 +271,14 @@ class SparrowDecryptionAsync(SparrowDecryption):
         """
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(None, partial(
-            super().easy_decryption, decompression=decompression, key=key))
+            super().easy_decryption, decompression=decompression, key=key
+        ))
+
+    async def random_decryption(self, decompression: str, key: bytes, compression_type: str = None):
+        """
+        异步秘钥加密数据
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, partial(
+            super().random_decryption, decompression=decompression, key=key
+        ))

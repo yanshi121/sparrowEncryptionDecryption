@@ -1,3 +1,9 @@
+import hashlib
+import random
+import string
+import time
+
+
 def binary_to_quaternary(binary: str):
     """
     将二进制转换为四进制
@@ -51,15 +57,16 @@ def binary_to_string(binary: str):
     return string
 
 
-def split_pairwise(string: str):
+def split_pairwise(string_: str, length: int = 2):
     """
     将字符串两两分为一组并存入数组
-    :param string: 被分割的字符串
+    :param length:
+    :param string_: 被分割的字符串
     :return: 返回分割好的数组
     """
     result = []
-    for i in range(0, len(string), 2):
-        result.append(string[i:i + 2])
+    for i in range(0, len(string_), length):
+        result.append(string_[i:i + length])
     return result
 
 
@@ -87,8 +94,10 @@ def order_compression_and_decompression2(mode: bool, data: str, keys2: dict):
         for k, v in keys2.items():
             data = data.replace(k, v)
     else:
-        for k, v in keys2.items():
-            data = data.replace(v, k)
+        keys = {v: k for k, v in keys2.items()}
+        for i in data:
+            if i in keys:
+                data = data.replace(i, keys[i])
     return data
 
 
@@ -109,3 +118,33 @@ def order_compression_and_decompression(mode: bool, data: str, keys1: dict):
     return data
 
 
+def shuffle_by_seed(input_string: str, array: list) -> list:
+    """
+    根据输入字符串作为种子打乱数组
+    参数:
+        input_string: 用于生成随机种子的字符串
+        array: 需要被打乱的数组
+    返回:
+        打乱后的新数组
+    """
+    # 创建输入字符串的哈希作为种子
+    seed_hash = hashlib.sha256(input_string.encode()).digest()
+    seed_value = int.from_bytes(seed_hash[:8], byteorder='big', signed=False)
+
+    # 使用种子初始化随机数生成器
+    rng = random.Random(seed_value)
+    rng.shuffle(array)
+
+    return array
+
+
+def get_random_key(keys: list, values: list):
+    characters = string.ascii_letters + string.digits
+    length = random.randint(5, 10)
+    string_key = ''.join(random.choice(characters) for _ in range(length))
+    keys = shuffle_by_seed(f"{string_key}_{time.time()}", keys)
+    values = shuffle_by_seed(f"{string_key}_{time.time()}", values)
+    random_key = {}
+    for i in range(len(keys)):
+        random_key[keys[i]] = values[i]
+    return random_key

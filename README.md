@@ -88,11 +88,15 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
 ## 使用
 
 * sparrowEncryptionDecryption的使用方法
-* sparrowEncryptionDecryption相关类初始化有四个参数，不输入则使用默认秘钥集
+* sparrowEncryptionDecryption相关类初始化有六个参数，不输入则使用默认秘钥集
     * order_keys1: order方法第一次解密秘钥
     * order_keys2: order方法第二次解密秘钥
     * easy_keys1: easy方法第一次解密秘钥
     * easy_keys2: easy方法第二次解密秘钥
+    * dict_key1： random方法的第一次加密键
+    * dict_key2： random方法的第二次加密键
+    * dict_value1： random方法的第一次加密值
+    * dict_value2： random方法的第二次加密值
 
 ---
 
@@ -102,6 +106,7 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
 * 一个有两种方法
     * order_encryption
     * easy_encryption
+    * random_encryption
 
 ---
 
@@ -120,7 +125,7 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
 ```python
 from sparrowEncryptionDecryption import SparrowEncryptionDecryption
 
-sed = sparrowEncryptionDecryption()
+sed = SparrowEncryptionDecryption()
 sed.order_encryption("test", "test")
 ```
 
@@ -139,8 +144,29 @@ sed.order_encryption("test", "test")
 ```python
 from sparrowEncryptionDecryption import SparrowEncryptionDecryption
 
-sed = sparrowEncryptionDecryption()
+sed = SparrowEncryptionDecryption()
 sed.easy_encryption("test", "test")
+```
+
+---
+
+#### random_encryption
+
+* 使用random_encryption方法加密数据
+* 携带五个参数
+    * string: 需要被加密的数据
+    * key: 秘钥
+    * effective_duration: 秘钥过期时间，-1为永不过期，默认-1
+    * is_compression: 默认为2，二次压缩压缩，1为一次压缩，0为不压缩
+    * mode: 加密模式，0为二进制加密，1为四进制加密，默认为0
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
+* 返回被加密好的数据以及二进制秘钥
+
+```python
+from sparrowEncryptionDecryption import SparrowEncryptionDecryption
+
+sed = SparrowEncryptionDecryption()
+sed.random_encryption("test", "test")
 ```
 
 ---
@@ -151,6 +177,7 @@ sed.easy_encryption("test", "test")
 * 一个又两种方法
     * order_decryption
     * easy_decryption
+    * random_decryption
 
 ---
 
@@ -166,7 +193,7 @@ sed.easy_encryption("test", "test")
 ```python
 from sparrowEncryptionDecryption import SparrowEncryptionDecryption
 
-sed = sparrowEncryptionDecryption()
+sed = SparrowEncryptionDecryption()
 sed.order_decryption("test", "test")
 ```
 
@@ -184,11 +211,28 @@ sed.order_decryption("test", "test")
 ```python
 from sparrowEncryptionDecryption import SparrowEncryptionDecryption
 
-sed = sparrowEncryptionDecryption()
+sed = SparrowEncryptionDecryption()
 sed.easy_decryption("test", "test")
 ```
 
 ---
+
+#### random_decryption
+
+* 使用random_decryption方法解密数据
+* 携带两个参数
+    * decompression: 需要被解密的数据
+    * key: 秘钥（二进制秘钥）
+* 返回被解密的数据或秘钥错误类型
+
+---
+
+```python
+from sparrowEncryptionDecryption import SparrowEncryptionDecryption
+
+sed = SparrowEncryptionDecryption()
+sed.random_decryption("test", b"test")
+```
 
 ## 工具
 
@@ -267,3 +311,22 @@ sed.easy_decryption("test", "test")
     * mode: True为加密，False为解密，bool类型
     * data: 需要被压缩或解压的数据
 * 返回被压缩或解压的数据
+
+---
+
+### shuffle_by_seed
+
+* 根据输入字符串作为种子打乱数组
+* 携带两个参数
+    * input_string: 用于生成随机种子的字符串
+    * array: 需要被打乱的数组
+* 打乱后的新数组
+
+---
+
+### get_random_key
+
+* 生成随机密钥对
+* 携带两个参数
+    * keys： 秘钥键
+    * values： 秘钥值
