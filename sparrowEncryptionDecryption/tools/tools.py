@@ -1,7 +1,10 @@
 import hashlib
 import random
+import secrets
 import string
 import time
+import os
+from secrets import token_urlsafe
 
 
 def binary_to_quaternary(binary: str):
@@ -35,13 +38,13 @@ def quaternary_to_binary(quaternary: str):
     return binary
 
 
-def string_to_binary(string):
+def string_to_binary(string_):
     """
     将字符串转换为二进制
-    :param string: 字符串
+    :param string_: 字符串
     :return: 返回字符串的二进制数据
     """
-    bytes_data = string.encode('utf-8')
+    bytes_data = string_.encode('utf-8')
     binary_data = ''.join(format(byte, '08b') for byte in bytes_data)
     return binary_data
 
@@ -70,15 +73,15 @@ def split_pairwise(string_: str, length: int = 2):
     return result
 
 
-def split_double_pairwise(string: str):
+def split_double_pairwise(split_string: str):
     """
     将字符串每四个分为一组并存入数组
-    :param string: 被分割的字符串
+    :param split_string: 被分割的字符串
     :return: 返回分割好的数组
     """
     result = []
-    for i in range(0, len(string), 4):
-        result.append(string[i:i + 4])
+    for i in range(0, len(split_string), 4):
+        result.append(split_string[i:i + 4])
     return result
 
 
@@ -119,32 +122,33 @@ def order_compression_and_decompression(mode: bool, data: str, keys1: dict):
 
 
 def shuffle_by_seed(input_string: str, array: list) -> list:
-    """
-    根据输入字符串作为种子打乱数组
-    参数:
-        input_string: 用于生成随机种子的字符串
-        array: 需要被打乱的数组
-    返回:
-        打乱后的新数组
-    """
     # 创建输入字符串的哈希作为种子
     seed_hash = hashlib.sha256(input_string.encode()).digest()
     seed_value = int.from_bytes(seed_hash[:8], byteorder='big', signed=False)
-
     # 使用种子初始化随机数生成器
     rng = random.Random(seed_value)
     rng.shuffle(array)
-
     return array
 
 
 def get_random_key(keys: list, values: list):
-    characters = string.ascii_letters + string.digits
-    length = random.randint(5, 10)
+    characters = string.ascii_letters + string.digits + string.punctuation
+    length = random.randint(50, 100)
     string_key = ''.join(random.choice(characters) for _ in range(length))
-    keys = shuffle_by_seed(f"{string_key}_{time.time()}", keys)
+    os_urandom_obj = os.urandom(length)
+    hashlib_obj = hashlib.md5(os_urandom_obj).hexdigest()
+    keys = shuffle_by_seed(f"{string_key}_{time.time()}_{hashlib_obj}_{token_urlsafe(16)}", keys)
     values = shuffle_by_seed(f"{string_key}_{time.time()}", values)
     random_key = {}
     for i in range(len(keys)):
         random_key[keys[i]] = values[i]
     return random_key
+
+
+def choice_key(key_list: list, length: int):
+    keys = []
+    for i in range(length):
+        key = secrets.choice(key_list)
+        keys.append(key)
+        key_list.remove(key)
+    return keys, key_list

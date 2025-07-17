@@ -52,6 +52,24 @@ class SparrowStringTypeError(Exception):
         super().__init__(self.error_message)
 
 
+class SparrowListTypeError(Exception):
+    def __init__(self, error_message: str = None):
+        if error_message is not None:
+            self.error_message = error_message
+        else:
+            self.error_message = "加密数组类型错误，输入类型为数组"
+        super().__init__(self.error_message)
+
+
+class SparrowLengthError(Exception):
+    def __init__(self, error_message: str = None):
+        if error_message is not None:
+            self.error_message = error_message
+        else:
+            self.error_message = "加密数组长度错误"
+        super().__init__(self.error_message)
+
+
 class SparrowCompressionRangeError(Exception):
     def __init__(self, error_message: str = None):
         if error_message is not None:

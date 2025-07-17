@@ -93,10 +93,6 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
     * order_keys2: order方法第二次解密秘钥
     * easy_keys1: easy方法第一次解密秘钥
     * easy_keys2: easy方法第二次解密秘钥
-    * dict_key1： random方法的第一次加密键
-    * dict_key2： random方法的第二次加密键
-    * dict_value1： random方法的第一次加密值
-    * dict_value2： random方法的第二次加密值
 
 ---
 
@@ -107,6 +103,7 @@ from sparrowEncryptionDecryption.function.encryption import SparrowEncryptionAsy
     * order_encryption
     * easy_encryption
     * random_encryption
+    * full_random_encryption
 
 ---
 
@@ -171,6 +168,27 @@ sed.random_encryption("test", "test")
 
 ---
 
+#### full_random_encryption
+
+* 使用full_random_encryption方法加密数据
+* 携带五个参数
+    * string: 需要被加密的数据
+    * key: 秘钥
+    * effective_duration: 秘钥过期时间，-1为永不过期，默认-1
+    * is_compression: 默认为2，二次压缩压缩，1为一次压缩，0为不压缩
+    * mode: 加密模式，0为二进制加密，1为四进制加密，默认为0
+    * compression_type: 压缩算法(zlib、gzip、bz2、lzma、lz4、brotli、snappy、huffman、deflate、lz77)
+* 返回被加密好的数据以及二进制秘钥
+
+```python
+from sparrowEncryptionDecryption import SparrowEncryptionDecryption
+
+sed = SparrowEncryptionDecryption()
+sed.full_random_encryption("test", "test")
+```
+
+---
+
 ### 解密
 
 * sparrowEncryptionDecryption的解密方法
@@ -178,6 +196,7 @@ sed.random_encryption("test", "test")
     * order_decryption
     * easy_decryption
     * random_decryption
+    * full_random_decryption
 
 ---
 
@@ -225,13 +244,28 @@ sed.easy_decryption("test", "test")
     * key: 秘钥（二进制秘钥）
 * 返回被解密的数据或秘钥错误类型
 
----
-
 ```python
 from sparrowEncryptionDecryption import SparrowEncryptionDecryption
 
 sed = SparrowEncryptionDecryption()
 sed.random_decryption("test", b"test")
+```
+
+---
+
+#### full_random_decryption
+
+* 使用full_random_decryption方法解密数据
+* 携带两个参数
+    * decompression: 需要被解密的数据
+    * key: 秘钥（二进制秘钥）
+* 返回被解密的数据或秘钥错误类型
+
+```python
+from sparrowEncryptionDecryption import SparrowEncryptionDecryption
+
+sed = SparrowEncryptionDecryption()
+sed.full_random_decryption("test", b"test")
 ```
 
 ## 工具
@@ -330,3 +364,12 @@ sed.random_decryption("test", b"test")
 * 携带两个参数
     * keys： 秘钥键
     * values： 秘钥值
+
+---
+
+### choice_key
+
+* 获取指定数组中指定数量的随机值
+* 携带两个参数
+    * key_list： 指定数组
+    * length： 指定数量
