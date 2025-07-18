@@ -15,7 +15,6 @@ from sparrowEncryptionDecryption.tools import SparrowSecretKeyOverdueError
 from sparrowEncryptionDecryption.tools import SparrowDecompressionTypeError
 from sparrowEncryptionDecryption.tools import SparrowBeDecryptionContentError
 from sparrowEncryptionDecryption.tools import order_compression_and_decompression
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
 from sparrowEncryptionDecryption.tools import binary_to_string, SparrowCompressTypeError
 
 
@@ -123,13 +122,13 @@ class SparrowDecryption:
             elif "二" in decompression:
                 string, effective_duration, key, encryption_time = decompression.replace("二", '').split(SPLIT_CHAR)
                 string = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, string, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, string, self._keys2_), self._keys1_)
                 key = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, key, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, key, self._keys2_), self._keys1_)
                 effective_duration = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, effective_duration, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, effective_duration, self._keys2_), self._keys1_)
                 encryption_time = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, encryption_time, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, encryption_time, self._keys2_), self._keys1_)
             else:
                 raise SparrowBeDecryptionContentError
 
@@ -149,7 +148,7 @@ class SparrowDecryption:
             decompression = decompression.replace("四", "")
             if "零" in decompression:
                 string, effective_duration, key, encryption_time = decompression.replace("零", '').split(SPLIT_CHAR)
-            if "一" in decompression:
+            elif "一" in decompression:
                 string, effective_duration, key, encryption_time = decompression.replace("一", '').split(SPLIT_CHAR)
                 key = order_compression_and_decompression(False, key, self._keys1_)
                 string = order_compression_and_decompression(False, string, self._keys1_)
@@ -158,13 +157,13 @@ class SparrowDecryption:
             elif "二" in decompression:
                 string, effective_duration, key, encryption_time = decompression.replace("二", '').split(SPLIT_CHAR)
                 string = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, string, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, string, self._keys2_), self._keys1_)
                 key = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, key, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, key, self._keys2_), self._keys1_)
                 effective_duration = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, effective_duration, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, effective_duration, self._keys2_), self._keys1_)
                 encryption_time = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, encryption_time, self._keys2_), self._keys1_)
+                    False, order_compression_and_decompression(False, encryption_time, self._keys2_), self._keys1_)
             else:
                 raise SparrowBeDecryptionContentError
             string = binary_to_string(quaternary_to_binary(
@@ -233,6 +232,8 @@ class SparrowDecryption:
                         decryption_data = ""
                         for i in encryption_data:
                             decryption_data += decryption_keys[i]
+                        if compression_type is not None:
+                            return ast.literal_eval(binary_to_string(quaternary_to_binary(decryption_data)))
                         return binary_to_string(quaternary_to_binary(decryption_data))
                     except Exception:
                         raise SparrowBeDecryptionContentError
@@ -251,6 +252,8 @@ class SparrowDecryption:
                         decryption_data = ""
                         for i in encryption_data:
                             decryption_data += decryption_keys[i]
+                        if compression_type is not None:
+                            return ast.literal_eval(binary_to_string(quaternary_to_binary(decryption_data)))
                         return binary_to_string(decryption_data)
                     except Exception:
                         raise SparrowBeDecryptionContentError
@@ -306,11 +309,11 @@ class SparrowDecryption:
                 decompression = decompression.replace("二", '')
                 string, effective_duration, encryption_time = decompression.split(SPLIT_CHAR)
                 string = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, string, keys2), keys1)
+                    False, order_compression_and_decompression(False, string, keys2), keys1)
                 effective_duration = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, effective_duration, keys2), keys1)
+                    False, order_compression_and_decompression(False, effective_duration, keys2), keys1)
                 encryption_time = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, encryption_time, keys2), keys1)
+                    False, order_compression_and_decompression(False, encryption_time, keys2), keys1)
             else:
                 raise SparrowBeDecryptionContentError
             if mode:
@@ -400,11 +403,11 @@ class SparrowDecryption:
                 decompression = decompression.replace(twe, '')
                 string, effective_duration, encryption_time = decompression.split(split_char)
                 string = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, string, keys2), keys1)
+                    False, order_compression_and_decompression(False, string, keys2), keys1)
                 effective_duration = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, effective_duration, keys2), keys1)
+                    False, order_compression_and_decompression(False, effective_duration, keys2), keys1)
                 encryption_time = order_compression_and_decompression(
-                    False, order_compression_and_decompression2(False, encryption_time, keys2), keys1)
+                    False, order_compression_and_decompression(False, encryption_time, keys2), keys1)
             else:
                 raise SparrowBeDecryptionContentError
             if mode:
@@ -426,6 +429,7 @@ class SparrowDecryption:
         except Exception:
             raise SparrowBeDecryptionContentError
         if compression_type is not None:
+            print(string)
             string_data = ast.literal_eval(string)
         else:
             string_data = string

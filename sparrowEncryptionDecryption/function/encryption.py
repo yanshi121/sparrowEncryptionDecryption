@@ -4,7 +4,7 @@ from functools import partial
 from sparrowEncryptionDecryption.tools import split_pairwise, SparrowListTypeError, SparrowLengthError
 from sparrowEncryptionDecryption.tools import string_to_binary, choice_key
 from sparrowEncryptionDecryption.tools import SparrowKeyTypeError
-from sparrowEncryptionDecryption.function.config import EASY_KEYS1, RANDOM_KEY
+from sparrowEncryptionDecryption.function.config import EASY_KEYS1
 from sparrowEncryptionDecryption.function.config import EASY_KEYS2
 from sparrowEncryptionDecryption.tools import binary_to_quaternary
 from sparrowEncryptionDecryption.function.config import SPLIT_CHAR
@@ -15,13 +15,11 @@ from sparrowEncryptionDecryption.function.config import DICT_KEY2
 from sparrowEncryptionDecryption.function.config import DICT_VALUE1
 from sparrowEncryptionDecryption.function.config import DICT_VALUE2
 from sparrowEncryptionDecryption.function.config import RANDOM_KEY
-from sparrowEncryptionDecryption.tools import split_double_pairwise
 from sparrowEncryptionDecryption.tools import SparrowModeRangeError
 from sparrowEncryptionDecryption.tools import COMPRESSION_ALGORITHMS
 from sparrowEncryptionDecryption.tools import SparrowStringTypeError
 from sparrowEncryptionDecryption.tools import SparrowCompressionRangeError
 from sparrowEncryptionDecryption.tools import order_compression_and_decompression
-from sparrowEncryptionDecryption.tools import order_compression_and_decompression2
 from sparrowEncryptionDecryption.tools.tools import get_random_key
 
 
@@ -144,16 +142,16 @@ class SparrowEncryption:
                 encryption_time_binary = order_compression_and_decompression(True, encryption_time_binary, self._keys1_)
                 compression = string_binary + SPLIT_CHAR + effective_duration_binary + SPLIT_CHAR + key_binary + SPLIT_CHAR + encryption_time_binary + "一三"
             if is_compression == 2:
-                string_binary = order_compression_and_decompression2(
+                string_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_binary.replace("一", ''), self._keys1_), self._keys2_)
-                key_binary = order_compression_and_decompression2(
+                key_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, key_binary.replace("一", ''), self._keys1_), self._keys2_)
-                effective_duration_binary = order_compression_and_decompression2(
+                effective_duration_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_binary.replace("一", ''), self._keys1_), self._keys2_)
-                encryption_time_binary = order_compression_and_decompression2(
+                encryption_time_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_binary.replace("一", ''), self._keys1_), self._keys2_)
                 compression = string_binary + SPLIT_CHAR + effective_duration_binary + SPLIT_CHAR + key_binary + SPLIT_CHAR + encryption_time_binary + "二三"
@@ -178,16 +176,16 @@ class SparrowEncryption:
                                                                                  self._keys1_)
                 compression = string_quaternary + SPLIT_CHAR + effective_duration_quaternary + SPLIT_CHAR + key_quaternary + SPLIT_CHAR + encryption_time_quaternary + "一四"
             if is_compression == 2:
-                string_quaternary = order_compression_and_decompression2(
+                string_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_quaternary.replace("一", ''), self._keys1_), self._keys2_)
-                key_quaternary = order_compression_and_decompression2(
+                key_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, key_quaternary.replace("一", ''), self._keys1_), self._keys2_)
-                effective_duration_quaternary = order_compression_and_decompression2(
+                effective_duration_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_quaternary.replace("一", ''), self._keys1_), self._keys2_)
-                encryption_time_quaternary = order_compression_and_decompression2(
+                encryption_time_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_quaternary.replace("一", ''), self._keys1_), self._keys2_)
                 compression = string_quaternary + SPLIT_CHAR + effective_duration_quaternary + SPLIT_CHAR + key_quaternary + SPLIT_CHAR + encryption_time_quaternary + "二四"
@@ -215,17 +213,17 @@ class SparrowEncryption:
         encryption_data = ""
         encryption_key_data = ""
         if str(mode) == "0":
-            split_data = split_double_pairwise(str(string_to_binary(string)))
+            split_data = split_pairwise(str(string_to_binary(string)), 4)
             for i in split_data:
                 encryption_data += self._easy_keys1_[i]
-            split_key_data = split_double_pairwise(str(string_to_binary(key)))
+            split_key_data = split_pairwise(str(string_to_binary(key)), 4)
             for i in split_key_data:
                 encryption_key_data += self._easy_keys1_[i]
         elif str(mode) == "1":
-            split_data = split_double_pairwise(str(binary_to_quaternary(str(string_to_binary(string)))))
+            split_data = split_pairwise(str(binary_to_quaternary(str(string_to_binary(string)))), 4)
             for i in split_data:
                 encryption_data += self._easy_keys2_[i]
-            split_key_data = split_double_pairwise(str(binary_to_quaternary(str(string_to_binary(key)))))
+            split_key_data = split_pairwise(str(binary_to_quaternary(str(string_to_binary(key)))), 4)
             for i in split_key_data:
                 encryption_key_data += self._easy_keys2_[i]
         key_a = encryption_key_data[0: int(len(encryption_key_data) / 2)]
@@ -287,13 +285,13 @@ class SparrowEncryption:
                 encryption_time_binary = order_compression_and_decompression(True, encryption_time_binary, keys1)
                 compression = string_binary + SPLIT_CHAR + effective_duration_binary + SPLIT_CHAR + encryption_time_binary + "一三"
             if is_compression == 2:
-                string_binary = order_compression_and_decompression2(
+                string_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_binary.replace("一", ''), keys1), keys2)
-                effective_duration_binary = order_compression_and_decompression2(
+                effective_duration_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_binary.replace("一", ''), keys1), keys2)
-                encryption_time_binary = order_compression_and_decompression2(
+                encryption_time_binary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_binary.replace("一", ''), keys1), keys2)
                 compression = string_binary + SPLIT_CHAR + effective_duration_binary + SPLIT_CHAR + encryption_time_binary + "二三"
@@ -318,13 +316,13 @@ class SparrowEncryption:
                                                                                  keys1)
                 compression = string_quaternary + SPLIT_CHAR + effective_duration_quaternary + SPLIT_CHAR + encryption_time_quaternary + "一四"
             if is_compression == 2:
-                string_quaternary = order_compression_and_decompression2(
+                string_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_quaternary.replace("一", ''), keys1), keys2)
-                effective_duration_quaternary = order_compression_and_decompression2(
+                effective_duration_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_quaternary.replace("一", ''), keys1), keys2)
-                encryption_time_quaternary = order_compression_and_decompression2(
+                encryption_time_quaternary = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_quaternary.replace("一", ''), keys1), keys2)
                 compression = string_quaternary + SPLIT_CHAR + effective_duration_quaternary + SPLIT_CHAR + encryption_time_quaternary + "二四"
@@ -403,13 +401,13 @@ class SparrowEncryption:
                                                                                   keys1)
                 compression = string_compression + split_char + effective_duration_compression + split_char + encryption_time_compression + f"{one}{three}"
             if is_compression == 2:
-                string_compression = order_compression_and_decompression2(
+                string_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_binary.replace(one, ''), keys1), keys2) + f"{twe}{three}"
-                effective_duration_compression = order_compression_and_decompression2(
+                effective_duration_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_binary.replace(one, ''), keys1), keys2) + f"{twe}{three}"
-                encryption_time_compression = order_compression_and_decompression2(
+                encryption_time_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_binary.replace(one, ''), keys1), keys2) + f"{twe}{three}"
                 compression = string_compression + split_char + effective_duration_compression + split_char + encryption_time_compression + f"{twe}{three}"
@@ -438,13 +436,13 @@ class SparrowEncryption:
                                                                                   keys1)
                 compression = string_compression + split_char + effective_duration_compression + split_char + encryption_time_compression + f"{one}{four}"
             if is_compression == 2:
-                string_compression = order_compression_and_decompression2(
+                string_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, string_quaternary.replace(one, ''), keys1), keys2)
-                effective_duration_compression = order_compression_and_decompression2(
+                effective_duration_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, effective_duration_quaternary.replace(one, ''), keys1), keys2)
-                encryption_time_compression = order_compression_and_decompression2(
+                encryption_time_compression = order_compression_and_decompression(
                     True, order_compression_and_decompression(
                         True, encryption_time_quaternary.replace(one, ''), keys1), keys2)
                 compression = string_compression + split_char + effective_duration_compression + split_char + encryption_time_compression + f"{twe}{four}"

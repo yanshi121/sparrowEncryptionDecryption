@@ -3,8 +3,6 @@ from sparrowEncryptionDecryption.tools.tools import binary_to_quaternary
 from sparrowEncryptionDecryption.tools.tools import string_to_binary
 from sparrowEncryptionDecryption.tools.tools import quaternary_to_binary
 from sparrowEncryptionDecryption.tools.tools import split_pairwise
-from sparrowEncryptionDecryption.tools.tools import split_double_pairwise
-from sparrowEncryptionDecryption.tools.tools import order_compression_and_decompression2
 from sparrowEncryptionDecryption.tools.tools import order_compression_and_decompression
 from sparrowEncryptionDecryption.tools.tools import get_random_key
 from sparrowEncryptionDecryption.tools.tools import choice_key
