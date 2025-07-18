@@ -4,7 +4,7 @@ with open("sparrowEncryptionDecryption.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 setuptools.setup(
     name="sparrowEncryptionDecryption",  # 包名
-    version="0.4.2.1",  # 包版本号
+    version="0.4.2.2",  # 包版本号
     author="39",  # 作者名
     author_email="DY39project@outlook.com",  # 联系方式
     description="基于进制转换、随机抽取与压缩算法的浅加密工具",  # 包的简述
@@ -19,5 +19,5 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     python_requires='>=3.6',  # 对python的最低版本要求
-    install_requires=['lz4', 'brotli', 'python-snappy', 'numpy', 'ahocorasick']  # 项目依赖的其他库
+    install_requires=['lz4', 'brotli', 'python-snappy', 'numpy', 'pyahocorasick']  # 项目依赖的其他库
 )
